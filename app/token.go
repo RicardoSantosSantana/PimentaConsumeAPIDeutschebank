@@ -46,14 +46,14 @@ func GetToken() (Token, error) {
 		}
 		return token, nil
 	}
-	fmt.Println("exec database ...")
+	fmt.Println("   get token on database ...")
 	return token, nil
 
 }
 
 func new_token() (Token, error) {
 
-	fmt.Println("exec new token ...")
+	fmt.Println("   generate new token ...")
 
 	settings := Settings()
 
@@ -73,7 +73,7 @@ func new_token() (Token, error) {
 
 func refresh_token() (Token, error) {
 
-	fmt.Println("exec refresh token ...")
+	fmt.Println("   generate token with refresh token ...")
 	token, err := active_token()
 
 	if err != nil {

@@ -25,11 +25,12 @@ type ApiEndPoint struct {
 }
 
 type DataSettings struct {
-	Database       DbConnection `json:"database"`
-	Auth           ApiAuth      `json:"auth"`
-	GetToken       ApiEndPoint  `json:"endpoint"`
-	GetTransaction ApiEndPoint  `json:"transaction"`
-	GetAccounts    ApiEndPoint  `json:"accounts"`
+	Database               DbConnection `json:"database"`
+	Auth                   ApiAuth      `json:"auth"`
+	GetToken               ApiEndPoint  `json:"endpoint"`
+	GetTransaction         ApiEndPoint  `json:"transaction"`
+	GetAccounts            ApiEndPoint  `json:"accounts"`
+	LimitToGetTransactions string       `json:"limit"`
 }
 
 // get variable content if exist
@@ -71,5 +72,6 @@ func Settings() DataSettings {
 			Method: environment("GET", "API_URL_GET_CASH_ACCOUNT_METHOD"),
 			Uri:    environment("https://simulator-api.db.com/gw/dbapi/banking/cashAccounts/v2", "API_URL_GET_CASH_ACCOUNT"),
 		},
+		environment("60", "LIMIT_TRANSACTIONS"),
 	}
 }

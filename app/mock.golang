@@ -1,0 +1,50 @@
+	t1 := Transactions{
+		OriginIban:                           "DE00500700100200000867",
+		Amount:                               750.5,
+		CounterPartyName:                     "Claudia Müller",
+		CounterPartyIban:                     "DE04100500000006655443",
+		PaymentReference:                     "ÜBERWEISUNG  Miete",
+		BookingDate:                          "2022-05-04",
+		CurrencyCode:                         "EUR",
+		TransactionCode:                      "123",
+		ExternalBankTransactionDomainCode:    "D001",
+		ExternalBankTransactionFamilyCode:    "CCRD",
+		ExternalBankTransactionSubFamilyCode: "CWDL",
+		MandateReference:                     "MX0355443",
+		CreditorId:                           "DE0222200004544221",
+		E2eReference:                         "E2E - Reference",
+		PaymentIdentification:                "212+ZKLE 911/696682-X-ABC",
+		ValueDate:                            "2018-04-23",
+		Id:                                   "KRMBOX4dhgnSNi2DsWmL1GGBFBhdLyqnS86SN9NE6bQLHeP-oSQ3dUATWdEsZWX-JVrm1HffjxU99ksk9jHwsocFaDk9PpU3pdQvglUD5B1W92o_4AOhgbxPhAyWCTB8",
+	}
+
+	t2 := Transactions{
+		OriginIban:                           "IBAN 001",
+		Amount:                               -50.00,
+		CounterPartyName:                     "BlaBlaCar",
+		PaymentReference:                     "Rech 8886590 Köln-Berlin",
+		BookingDate:                          "2022-11-30",
+		CurrencyCode:                         "EUR",
+		TransactionCode:                      "4565",
+		ExternalBankTransactionDomainCode:    "D001",
+		ExternalBankTransactionFamilyCode:    "CCRD",
+		ExternalBankTransactionSubFamilyCode: "CWDL",
+		MandateReference:                     "MX0355443",
+		CreditorId:                           "DE0222200004544221",
+		E2eReference:                         "E2E - Reference",
+		PaymentIdentification:                "212+ZKLE 911/696682-X-ABC",
+		ValueDate:                            "2018-04-23",
+		Id:                                   "gvetTQ62Jn9ZXTE6lJxybMEFi17O3nJVmJuz0AkMBj4du3T5KNouFr7xLmD0xiDiJVrm1HffjxU99ksk9jHwsocFaDk9PpU3pdQvglUD5B0IXe8P58Z2zvLzgHDmCoeE",
+	}
+	forn := BankingTransactions{
+		100,
+		0,
+		10,
+		[]Transactions{t1, t2},
+	}
+
+	insert := "insert into transactions (originiban, amount, counterpartyname, counterpartyiban, paymentreference, bookingdate, currencycode, transactioncode, externalbanktransactiondomaincode, externalbanktransactionfamilycode, externalbanktransactionsubfamilycode, mandatereference, creditorid, e2ereference, paymentidentification, valuedate, id) "
+
+	values := make_values("TBtransactions", forn)
+
+	fmt.Println(insert, values)

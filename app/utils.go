@@ -1,6 +1,8 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+)
 
 func printToken(token Token) {
 	fmt.Println("\nTOKEN TYPE: ", token.Token_type)
