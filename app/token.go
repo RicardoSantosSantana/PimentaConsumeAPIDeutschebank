@@ -59,8 +59,8 @@ func new_token() (Token, error) {
 
 	data := url.Values{}
 	data.Set("grant_type", "authorization_code")
-	data.Set("code", settings.Auth.Code)
-	data.Set("redirect_uri", settings.Auth.Redirect_uri)
+	data.Set("code", settings.Api.Auth.Code)
+	data.Set("redirect_uri", settings.Api.Auth.Redirect_uri)
 
 	token, err_response := response_token(strings.NewReader(data.Encode()))
 
@@ -98,12 +98,12 @@ func response_token(payload io.Reader) (Token, error) {
 	token := Token{}
 	settings := Settings()
 
-	req, err := http.NewRequest(http.MethodPost, settings.GetToken.Uri, payload)
+	req, err := http.NewRequest(http.MethodPost, settings.Api.GetToken.Uri, payload)
 	if err != nil {
 		panic(err)
 	}
 
-	req.SetBasicAuth(settings.Auth.Client_id, settings.Auth.Client_secret)
+	req.SetBasicAuth(settings.Api.Auth.Client_id, settings.Api.Auth.Client_secret)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.Close = true
 

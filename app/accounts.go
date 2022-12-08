@@ -30,14 +30,14 @@ func response_cash_account() (CashAccount, error) {
 	cashAccount := CashAccount{}
 	settings := Settings()
 
-	req, err := http.NewRequest(settings.GetAccounts.Method, settings.GetAccounts.Uri, bytes.NewReader([]byte("")))
+	req, err := http.NewRequest(settings.Api.GetAccounts.Method, settings.Api.GetAccounts.Uri, bytes.NewReader([]byte("")))
 	if err != nil {
-		panic(err)
+		return cashAccount, err
 	}
 	token, errorToken := GetToken()
 
 	if errorToken != nil {
-		panic(errorToken)
+		return cashAccount, errorToken
 	}
 
 	req.Header.Add("Authorization", "Bearer "+token.Access_token)
@@ -47,7 +47,7 @@ func response_cash_account() (CashAccount, error) {
 	client := http.Client{}
 	response, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		return cashAccount, err
 	}
 
 	defer response.Body.Close()

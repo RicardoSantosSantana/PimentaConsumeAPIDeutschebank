@@ -2,19 +2,34 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"time"
 )
 
+//   - 1 list_accounts[
+// 		get_list_transactions [
+// 			get_transactions[
+// 				save_transactions
+// 			]
+// 		]
+//	]
+
 func main() {
 
-	begin := time.Now()
+	list_accounts()
 
-	fmt.Println("*****************************************************")
+}
+
+func list_accounts() {
+
+	clearConsole()
+	begin := time.Now()
 
 	CashAccount, error := response_cash_account()
 
 	if error != nil {
-		panic(error)
+		fmt.Println("\n  (!) ", error)
+		os.Exit(0)
 	}
 
 	for i := 0; i < len(CashAccount.Accounts); i++ {
@@ -34,5 +49,4 @@ func main() {
 
 	fmt.Println("Start : ", begin)
 	fmt.Println("Finish: ", time.Now())
-
 }

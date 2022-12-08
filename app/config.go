@@ -1,9 +1,80 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
+
+	"github.com/kelseyhightower/envconfig"
+	"gopkg.in/yaml.v2"
 )
+
+type Config struct {
+	Server struct {
+		Port string `yaml:"port"`
+		Host string `yaml:"host"`
+	} `yaml:"server"`
+
+	Database struct {
+		Name     string `yaml:"name" envconfig:"MYSQL_DATABASE"`
+		Host     string `yaml:"host" envconfig:"MYSQL_SERVER"`
+		User     string `yaml:"user" envconfig:"MYSQL_USER"`
+		Password string `yaml:"pass" envconfig:"MYSQL_PASSWORD"`
+		Port     string `yaml:"port" envconfig:"MYSQL_PORT"`
+	} `yaml:"database"`
+
+	Api struct {
+		Limit string `yaml:"limit" envconfig:"LIMIT_TRANSACTIONS"`
+
+		Auth struct {
+			Client_id     string `yaml:"client_id" envconfig:"CLIENT_ID"`
+			Client_secret string `yaml:"client_secret" envconfig:"CLIENT_SECRET"`
+			Code          string `yaml:"code" envconfig:"CODE"`
+			Redirect_uri  string `yaml:"redirect_uri" envconfig:"REDIRECT_URL"`
+		} `yaml:"auth"`
+
+		GetToken struct {
+			Method string `yaml:"method" envconfig:"API_URL_GET_TOKEN_METHOD"`
+			Uri    string `yaml:"uri" envconfig:"API_URL_GET_TOKEN"`
+		} `yaml:"get_token"`
+
+		GetTransaction struct {
+			Method string `yaml:"method" envconfig:"API_URL_GET_TRANSACTION_METHOD"`
+			Uri    string `yaml:"uri" envconfig:"API_URL_GET_TRANSACTION"`
+		} `yaml:"get_transaction"`
+
+		GetAccounts struct {
+			Method string `yaml:"method" envconfig:"API_URL_GET_CASH_ACCOUNT_METHOD"`
+			Uri    string `yaml:"uri" envconfig:"API_URL_GET_CASH_ACCOUNT"`
+		} `yaml:"get_accounts"`
+	}
+}
+
+func processError(err error) {
+	fmt.Println(err)
+	os.Exit(2)
+}
+
+func readFile(cfg *Config) {
+	f, err := os.Open("config.yaml")
+	if err != nil {
+		processError(err)
+	}
+	defer f.Close()
+
+	decoder := yaml.NewDecoder(f)
+	err = decoder.Decode(cfg)
+	if err != nil {
+		processError(err)
+	}
+}
+
+func readEnv(cfg *Config) {
+	err := envconfig.Process("", cfg)
+	if err != nil {
+		processError(err)
+	}
+}
 
 type DbConnection struct {
 	DatabaseName string `json:"databasename"`
@@ -33,7 +104,6 @@ type DataSettings struct {
 	LimitToGetTransactions string       `json:"limit"`
 }
 
-// get variable content if exist
 func environment(value_default string, env string) string {
 
 	enviromentVariable := strings.Trim(os.Getenv(strings.ToUpper(env)), " ")
@@ -42,9 +112,20 @@ func environment(value_default string, env string) string {
 		return os.Getenv(env)
 	}
 	return value_default
+
+}
+func Settings() Config {
+	var cfg Config
+	readEnv(&cfg)
+	readFile(&cfg)
+	return cfg
 }
 
-func Settings() DataSettings {
+func Settings2() DataSettings {
+
+	var cfg Config
+	readEnv(&cfg)
+	readFile(&cfg)
 
 	return DataSettings{
 		DbConnection{
@@ -72,6 +153,6 @@ func Settings() DataSettings {
 			Method: environment("GET", "API_URL_GET_CASH_ACCOUNT_METHOD"),
 			Uri:    environment("https://simulator-api.db.com/gw/dbapi/banking/cashAccounts/v2", "API_URL_GET_CASH_ACCOUNT"),
 		},
-		environment("60", "LIMIT_TRANSACTIONS"),
+		environment("200", "LIMIT_TRANSACTIONS"),
 	}
 }

@@ -1,0 +1,15 @@
+{
+    "counterPartyIban": "DE00500700100200000887",
+    "amount": 124.55,
+    "bookingDate": "2022-12-07",
+    "paymentReference": "import test information",
+    "externalBankTransactionDomainCode": "BFWA",
+    "externalBankTransactionFamilyCode": "RSA",
+    "externalBankTransactionSubFamilyCode": "MFAW",
+    "transactionCode": 999,
+    "counterPartyName": "DE10010000000000067616",
+    "MandateReference": "GPEQXXXXQ1",
+    "CreditorID": "DE17ZZZ00046235285",
+    "valueDate": "2022-12-07",
+    "currencyCode": "EUR"
+}

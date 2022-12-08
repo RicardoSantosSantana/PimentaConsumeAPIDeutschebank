@@ -87,15 +87,15 @@ func get_transactions(account Account, offset int) (BankingTransactions, error) 
 
 	params := url.Values{
 		"iban":   {account.Iban},
-		"limit":  {settings.LimitToGetTransactions},
+		"limit":  {settings.Api.Limit},
 		"offset": {strconv.Itoa(offset)},
 	}
 
-	reqUrl := settings.GetTransaction.Uri + "?" + params.Encode()
+	reqUrl := settings.Api.GetTransaction.Uri + "?" + params.Encode()
 
 	transactions := BankingTransactions{}
 
-	req, err := http.NewRequest(settings.GetTransaction.Method, reqUrl, bytes.NewReader([]byte("")))
+	req, err := http.NewRequest(settings.Api.GetTransaction.Method, reqUrl, bytes.NewReader([]byte("")))
 	if err != nil {
 		return transactions, err
 	}

@@ -14,11 +14,12 @@ func StringConnection() string {
 	settings := Settings()
 
 	return fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		settings.Database.UserName,
+		settings.Database.User,
 		settings.Database.Password,
-		settings.Database.ServerName,
+		settings.Database.Host,
 		settings.Database.Port,
-		settings.Database.DatabaseName)
+		settings.Database.Name)
+
 }
 
 func openConnection() (*sql.DB, error) {

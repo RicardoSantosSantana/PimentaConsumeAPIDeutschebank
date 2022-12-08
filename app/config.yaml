@@ -1,0 +1,33 @@
+# Server configurations
+server:
+  host: "localhost"
+  port: 8000
+
+# Database credentials
+database:
+  name: "bank_transactions"
+  host: "127.0.0.1"
+  user: "pimenta"
+  pass: "pimenta001"
+  port: 3399
+
+api:
+  limit: 200
+
+  auth:
+    client_id: "39975680-2987-4cae-9463-8b93b39129a3"
+    client_secret: "AK3BkpPgVzW9d3_qE-r_dWG1QPQLPc5SfV2PiQ-h4l0Z3iviqC_oITM7Z-wjtXmGmyts7uTORprAC_Gh9pb8sI4"
+    code: "w2Yg1J"
+    redirect_uri: "http://pimenta:3000/"
+
+  get_token:
+    method: "POST"
+    uri: "https://simulator-api.db.com/gw/oidc/token"
+
+  get_transaction:
+    method: "GET"
+    uri: "https://simulator-api.db.com:443/gw/dbapi/banking/transactions/v2"
+
+  get_accounts:
+    method: "GET"
+    uri: "https://simulator-api.db.com/gw/dbapi/banking/cashAccounts/v2"
