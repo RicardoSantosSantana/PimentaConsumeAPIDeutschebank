@@ -27,6 +27,10 @@ func openConnection() (*sql.DB, error) {
 	strConn := StringConnection()
 
 	db, err := sql.Open("mysql", strConn)
+	db.SetConnMaxIdleTime(time.Second * time.Duration(0))
+	db.SetConnMaxLifetime(time.Second * time.Duration(0))
+	db.SetMaxIdleConns(0)
+	db.SetMaxOpenConns(0)
 
 	if err != nil {
 		fmt.Println(strConn)
