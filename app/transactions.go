@@ -79,29 +79,15 @@ func get_list_transactions(account Account) error {
 		panic(error)
 	}
 
-	save_transactions(bankTransactions, account)
-
-	// if error_save_offset != nil {
-	// 	return (error_save_offset)
-	// 	//return error_transaction_loop
-	// }
+	prepare_to_save_transactions(bankTransactions, account)
 
 	offset := bankTransactions.offset()
 
 	if offset > 0 {
 		for i := 1; i <= offset; i++ {
 			bank_transactions, _ := get_transactions(account, i)
-			save_transactions(bank_transactions, account)
+			prepare_to_save_transactions(bank_transactions, account)
 
-			// if error_transaction_loop != nil {
-			// 	panic(error_transaction_loop)
-			// 	//return error_transaction_loop
-			// }
-
-			// if error_save != nil {
-			// 	panic(error_save)
-			// 	//return error_save
-			// }
 		}
 	}
 
@@ -165,7 +151,7 @@ func get_transactions(account Account, offset int) (ApiBankingTransactions, erro
 	return transactions, nil
 }
 
-func save_transactions(bankTransactions ApiBankingTransactions, account Account) error {
+func prepare_to_save_transactions(bankTransactions ApiBankingTransactions, account Account) error {
 
 	// primeira regra se a conta existe
 	bankAccount, err := GetBankAccount(account.Iban)
@@ -200,7 +186,7 @@ func save_transactions(bankTransactions ApiBankingTransactions, account Account)
 			bank_transaction.Json_data = transaction_to_json
 
 			fmt.Println(" ***** SALVAR A TRANSAÇÃO EXISTENTE")
-			log(bank_transaction)
+			save_transaction(bank_transaction)
 			fmt.Println("Transaction already exists, matched by description, date and bank account: ", transaction[i].ValueDate, " - ", transaction[i].Id)
 			continue
 		}
@@ -221,10 +207,12 @@ func save_transactions(bankTransactions ApiBankingTransactions, account Account)
 			Date_reserved:   transaction[i].BookingDate,
 			Operator:        transaction[i].CounterPartyName,
 			Bank_account_id: bankAccount.Id,
+			Category:        "",
+			Import_code:     "",
 		}
 
 		fmt.Println(" ***** SALVAR NOVA TRANSAÇÃO: ", new_finance_bank_transation.Bank_account_id.Int32)
-		log(new_finance_bank_transation)
+		save_transaction(new_finance_bank_transation)
 		fmt.Println("Transaction created: " + transaction[i].Id)
 
 	}
@@ -252,84 +240,89 @@ func bank_transaction_search_by_external_id(external_id string, bankAccount FINA
 	_, isTransactionExists, err := GetBankTransaction(transaction, bankAccount)
 
 	if err != nil {
-
 		return false, nil
 	}
 
 	return isTransactionExists, nil
 }
 
-// func save_transactions_old(transactions BankingTransactions) error {
+func save_transaction(transaction FINANCE_BankTransactions) error {
 
-// 	fmt.Println(" ")
+	fmt.Println(" ")
 
-// 	db, errConn := openConnection()
-// 	if errConn != nil {
-// 		return errConn
-// 	}
-// 	sql := `insert into transactions (
-// 		originiban,
-// 		amount,
-// 		counterpartyname,
-// 		counterpartyiban,
-// 		paymentreference,
-// 		bookingdate,
-// 		currencycode,
-// 		transactioncode,
-// 		externalbanktransactiondomaincode,
-// 		externalbanktransactionfamilycode,
-// 		externalbanktransactionsubfamilycode,
-// 		mandatereference,
-// 		creditorid,
-// 		e2ereference,
-// 		paymentidentification,
-// 		valuedate,
-// 		id)`
+	db, errConn := openConnection()
+	if errConn != nil {
+		return errConn
+	}
 
-// 	values := make_values_transactions(transactions)
+	// //(`id, `deleted_at`, `amount`, `operator`, `date`, `date_reserved`, `details`, `category`, `json_data`, `bank_account_id`, `account_id`, `created_at`, `updated_at`, `import_code`, `category_id`, `private`, `relation_status`, `problem`, `payment_id`, `expense_id`, `chargeback_id`, `exchange_rate`, `unique_id`, `invoice_id`, `tax_id`, `invoices`, `category_status`, `currency_id`, `external_id`, `source`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]','[value-6]','[value-7]','[value-8]','[value-9]','[value-10]','[value-11]','[value-12]','[value-13]','[value-14]','[value-15]','[value-16]','[value-17]','[value-18]','[value-19]','[value-20]','[value-21]','[value-22]','[value-23]','[value-24]','[value-25]','[value-26]','[value-27]','[value-28]','[value-29]','[value-30]','[value-31]')
 
-// 	_, errExec := db.Exec(sql + values)
+	sql := `INSERT INTO bank_transactions (	json_data, date, details, source, external_id, amount, date_reserved, operator, bank_account_id, category, import_code, private ) `
 
-// 	if errExec != nil {
-// 		return errExec
-// 	}
+	s := []string{
+		"'" + transaction.Json_data + "'",
+		strconv.Quote(dateFormat(transaction.Date)),
+		strconv.Quote(transaction.Details),
+		strconv.Quote(transaction.Source),
+		strconv.Quote(transaction.External_id),
+		fmt.Sprintf("%g", transaction.Amount),
+		strconv.Quote(dateFormat(transaction.Date_reserved)),
+		strconv.Quote(transaction.Operator),
+		strconv.Quote(strconv.Itoa(int(transaction.Bank_account_id.Int32))),
+		strconv.Quote(transaction.Category),
+		strconv.Quote(transaction.Import_code),
+		strconv.Quote(strconv.Itoa(int(transaction.Private.Int32))),
+	}
 
-// 	defer db.Close()
+	values := strings.Join(s, ",")
+	//	values := make_values_transactions(transactions)
+	fmt.Println(sql + " VALUES (" + values + ")")
 
-// 	return nil
-// }
+	fmt.Println(" ")
 
-// func make_values_transactions(transactions BankingTransactions) string {
+	_, errExec := db.Exec(sql + " VALUES (" + values + ")")
 
-// 	var v string
-// 	for i := 0; i <= len(transactions.Transactions)-1; i++ {
-// 		transaction := transactions.Transactions[i]
+	if errExec != nil {
+		fmt.Println(errExec)
+		return errExec
+	}
 
-// 		s := []string{
-// 			" (" + strconv.Quote(transaction.OriginIban),
-// 			fmt.Sprintf("%g", transaction.Amount),
-// 			strconv.Quote(transaction.CounterPartyName),
-// 			strconv.Quote(transaction.CounterPartyIban),
-// 			strconv.Quote(transaction.PaymentReference),
-// 			strconv.Quote(transaction.BookingDate),
-// 			strconv.Quote(transaction.CurrencyCode),
-// 			strconv.Quote(transaction.TransactionCode),
-// 			strconv.Quote(transaction.ExternalBankTransactionDomainCode),
-// 			strconv.Quote(transaction.ExternalBankTransactionFamilyCode),
-// 			strconv.Quote(transaction.ExternalBankTransactionSubFamilyCode),
-// 			strconv.Quote(transaction.MandateReference),
-// 			strconv.Quote(transaction.CreditorId),
-// 			strconv.Quote(transaction.E2eReference),
-// 			strconv.Quote(transaction.PaymentIdentification),
-// 			strconv.Quote(transaction.ValueDate),
-// 			strconv.Quote(transaction.Id) + "),",
-// 		}
+	defer db.Close()
 
-// 		v += strings.Join(s, ",")
+	return nil
+}
 
-// 	}
-// 	str := v[:len(v)-1]
+func make_values_transactions(transactions FINANCE_BankTransactions) string {
+	return ""
+	// var v string
+	// for i := 0; i <= len(transactions.Transactions)-1; i++ {
+	// 	transaction := transactions.Transactions[i]
 
-// 	return " values " + str
+	// 	s := []string{
+	// 		" (" + strconv.Quote(transaction.OriginIban),
+	// 		fmt.Sprintf("%g", transaction.Amount),
+	// 		strconv.Quote(transaction.CounterPartyName),
+	// 		strconv.Quote(transaction.CounterPartyIban),
+	// 		strconv.Quote(transaction.PaymentReference),
+	// 		strconv.Quote(transaction.BookingDate),
+	// 		strconv.Quote(transaction.CurrencyCode),
+	// 		strconv.Quote(transaction.TransactionCode),
+	// 		strconv.Quote(transaction.ExternalBankTransactionDomainCode),
+	// 		strconv.Quote(transaction.ExternalBankTransactionFamilyCode),
+	// 		strconv.Quote(transaction.ExternalBankTransactionSubFamilyCode),
+	// 		strconv.Quote(transaction.MandateReference),
+	// 		strconv.Quote(transaction.CreditorId),
+	// 		strconv.Quote(transaction.E2eReference),
+	// 		strconv.Quote(transaction.PaymentIdentification),
+	// 		strconv.Quote(transaction.ValueDate),
+	// 		strconv.Quote(transaction.Id) + "),",
+	// 	}
 
-// }
+	// 	v += strings.Join(s, ",")
+
+	// }
+	// str := v[:len(v)-1]
+
+	// return " values " + str
+
+}

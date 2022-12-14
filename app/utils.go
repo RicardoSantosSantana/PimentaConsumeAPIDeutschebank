@@ -24,10 +24,21 @@ func clearConsole() {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
+
 func log(dados any) {
 	jsons, _ := json.Marshal(dados)
 	fmt.Println("-----------------------------------------------------------------")
 	fmt.Println(string(jsons))
 	fmt.Println("-----------------------------------------------------------------")
+
+}
+
+func dateFormat(input string) string {
+
+	if len(input) > 10 {
+
+		return input[:10]
+	}
+	return input
 
 }

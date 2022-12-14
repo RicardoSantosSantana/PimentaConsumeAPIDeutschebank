@@ -17,7 +17,6 @@ type Account struct {
 	CurrentBalance     float32 `json:"currentBalance"`
 	ProductDescription string  `json:"productDescription"`
 }
-
 type CashAccount struct {
 	TotalItems int       `json:"totalItems"`
 	Offset     int       `json:"offset"`
