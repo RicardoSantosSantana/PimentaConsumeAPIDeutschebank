@@ -46,7 +46,7 @@ func (bankTransaction ApiBankingTransactions) offset() int {
 
 func update_field_csv(data string) (string, error) {
 
-	//fill object trasaction with data parameters
+	//fill object trasaction with data paramete
 	transaction, err := Json_decode(data)
 
 	if err != nil {
@@ -168,6 +168,9 @@ func prepare_to_save_transactions(bankTransactions ApiBankingTransactions, accou
 
 		fmt.Println(i, " de ", totalTransactions)
 
+		g, _ := Json_encode(transaction[i])
+		fmt.Println(g)
+
 		external_id := transaction[i].Id
 
 		is_exists_transaction_with_external_id, _ := bank_transaction_search_by_external_id(external_id, bankAccount)
@@ -255,7 +258,7 @@ func save_transaction(transaction FINANCE_BankTransactions) error {
 		return errConn
 	}
 
-	// //(`id, `deleted_at`, `amount`, `operator`, `date`, `date_reserved`, `details`, `category`, `json_data`, `bank_account_id`, `account_id`, `created_at`, `updated_at`, `import_code`, `category_id`, `private`, `relation_status`, `problem`, `payment_id`, `expense_id`, `chargeback_id`, `exchange_rate`, `unique_id`, `invoice_id`, `tax_id`, `invoices`, `category_status`, `currency_id`, `external_id`, `source`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]','[value-6]','[value-7]','[value-8]','[value-9]','[value-10]','[value-11]','[value-12]','[value-13]','[value-14]','[value-15]','[value-16]','[value-17]','[value-18]','[value-19]','[value-20]','[value-21]','[value-22]','[value-23]','[value-24]','[value-25]','[value-26]','[value-27]','[value-28]','[value-29]','[value-30]','[value-31]')
+	// (`id, `deleted_at`, `amount`, `operator`, `date`, `date_reserved`, `details`, `category`, `json_data`, `bank_account_id`, `account_id`, `created_at`, `updated_at`, `import_code`, `category_id`, `private`, `relation_status`, `problem`, `payment_id`, `expense_id`, `chargeback_id`, `exchange_rate`, `unique_id`, `invoice_id`, `tax_id`, `invoices`, `category_status`, `currency_id`, `external_id`, `source`) VALUES ('[value-1]','[value-2]','[value-3]','[value-4]','[value-5]','[value-6]','[value-7]','[value-8]','[value-9]','[value-10]','[value-11]','[value-12]','[value-13]','[value-14]','[value-15]','[value-16]','[value-17]','[value-18]','[value-19]','[value-20]','[value-21]','[value-22]','[value-23]','[value-24]','[value-25]','[value-26]','[value-27]','[value-28]','[value-29]','[value-30]','[value-31]')
 
 	sql := `INSERT INTO bank_transactions (	json_data, date, details, source, external_id, amount, date_reserved, operator, bank_account_id, category, import_code, private ) `
 
@@ -275,8 +278,9 @@ func save_transaction(transaction FINANCE_BankTransactions) error {
 	}
 
 	values := strings.Join(s, ",")
+
 	//	values := make_values_transactions(transactions)
-	fmt.Println(sql + " VALUES (" + values + ")")
+	//fmt.Println(sql + " VALUES (" + values + ")")
 
 	fmt.Println(" ")
 
