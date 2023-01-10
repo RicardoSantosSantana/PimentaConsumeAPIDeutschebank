@@ -15,9 +15,7 @@ import (
 //	]
 
 func main() {
-	
-	
-
+	 
 	//https://04c1ffa5ffbf4eebb3f392b6069d38aa@o4504417796882432.ingest.sentry.io/4504418327986176
 
 	 list_accounts()
